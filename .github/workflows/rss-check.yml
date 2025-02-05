@@ -1,0 +1,22 @@
+name: RSS to Discord
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check_rss:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: npm install axios rss-parser
+
+      - name: Run RSS Check
+        env:
+          RSS_FEED_URL: ${{ secrets.RSS_FEED_URL }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: node rss-check.js
