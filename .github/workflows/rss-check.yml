@@ -2,7 +2,7 @@ name: RSS Feed to Discord
 
 on:
   schedule:
-    - cron: "*/15 * * * *" 
+    - cron: "0 12 * * *"
   workflow_dispatch:
 
 jobs:
@@ -11,17 +11,18 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Download posted IDs artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: posted-ids
+          path: .
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: '18'
 
       - name: Install dependencies
         run: npm install
@@ -34,7 +35,8 @@ jobs:
         run: node rss-check.js
 
       - name: Upload posted IDs artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: posted-ids
           path: posted-ids.json
+          retention-days: 7 
