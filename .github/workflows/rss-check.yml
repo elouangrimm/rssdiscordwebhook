@@ -1,22 +1,40 @@
-name: RSS to Discord
+name: RSS Feed to Discord
 
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    - cron: "*/15 * * * *" 
   workflow_dispatch:
 
 jobs:
-  check_rss:
+  rss-to-discord:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Install Dependencies
-        run: npm install axios rss-parser
+      - name: Download posted IDs artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: posted-ids
 
-      - name: Run RSS Check
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./
+
+      - name: Run RSS Feed Check and Post to Discord
         env:
           RSS_FEED_URL: ${{ secrets.RSS_FEED_URL }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: node rss-check.js
+
+      - name: Upload posted IDs artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: posted-ids
+          path: posted-ids.json
